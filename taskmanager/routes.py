@@ -2,10 +2,12 @@ from flask import render_template, request, url_for, redirect
 from taskmanager import app, db
 from taskmanager.models import Category, Task
 
+
 # Defines home route
 @app.route("/")
 def home():
     return render_template("tasks.html")
+
 
 # Defines categories route
 @app.route("/categories")
@@ -15,6 +17,7 @@ def categories():
     """
     categories = list(Category.query.order_by(Category.category_name).all())
     return render_template("categories.html", categories=categories)
+
 
 # Defines add_category route
 @app.route("/add_category", methods=["GET", "POST"])
@@ -34,6 +37,7 @@ def add_category():
         return redirect(url_for("categories"))
     return render_template("add_category.html")
 
+
 # Defines edit_category route
 @app.route("/edit_category/<int:category_id>", methods=["GET", "POST"])
 def edit_category(category_id):
@@ -52,3 +56,11 @@ def edit_category(category_id):
         db.session.commit()
         return redirect(url_for("categories"))
     return render_template("edit_category.html", category=category)
+
+
+@app.route("/delete_category/<int:category_id>")
+def delete_category(category_id):
+    category = Category.query.get_or_404(category_id)
+    db.session.delete(category)
+    db.session.commit()
+    return redirect(url_for("categories"))
